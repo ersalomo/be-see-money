@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password       String
+  username       String          @unique
+  picture        String?
+  bio            String?
+  type           Int
+  blocked        Boolean         @default(false)
+  directPublish  Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  categories     Category[]
+  paymentMethods PaymentMethod[]
+  wallets        Wallet[]
+}
+
+model Wallet {
+  id            Int             @id @default(autoincrement())
+  userId        String
+  walletName    String?
+  currency      String
+  balance       Float
+  desc          String?
+  totalIncome   Float           @default(0)
+  totalOutcome  Float           @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  user          User            @relation(fields: [userId], references: [id])
+  walletHistory WalletHistory[]
+}
+
+model WalletHistory {
+  id              Int             @id @default(autoincrement())
+  desc            String?
+  categoryId      Int?
+  amount          Float
+  paymentMethod   String?
+  walletId        Int
+  image           String?
+  transactionType TransactionType
+  createAt        DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  wallet          Wallet          @relation(fields: [walletId], references: [id])
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    String
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PaymentMethod {
+  id         Int      @id @default(autoincrement())
+  methodName String   @db.VarChar(100)
+  desc       String?
+  image      String?
+  active     Boolean  @default(true)
+  userId     String
+  createAt   DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+enum TransactionType {
+  EXPENSE
+  INCOME
+}
