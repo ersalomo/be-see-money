@@ -45,7 +45,7 @@ model WalletHistory {
   desc            String?
   categoryId      Int?
   amount          Float
-  paymentMethod   Int?
+  paymentMethod   String?
   walletId        Int
   image           String?
   transactionType TransactionType
