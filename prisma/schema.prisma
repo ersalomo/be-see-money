@@ -17,10 +17,10 @@ model User {
   bio            String?
   type           Int             @default(0)
   blocked        Boolean         @default(false)
-  directPublish  Int
+  directPublish  Int             @default(0)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  token          String
+  token          String?
   isDeleted      Boolean         @default(false)
   categories     Category[]
   paymentMethods PaymentMethod[]

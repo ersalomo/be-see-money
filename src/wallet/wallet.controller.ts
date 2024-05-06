@@ -74,6 +74,7 @@ export class WalletController {
     @Param(':id') id: string,
     @Body() req: WalletReq,
   ): Promise<SuccessResponse<Wallet>> {
+    console.log(id, req);
     return new SuccessResponse();
   }
 
