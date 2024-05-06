@@ -6,6 +6,7 @@ import {
   UseFilters,
   Put,
   Delete,
+  Param,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -37,6 +38,14 @@ export class WalletController {
     return new SuccessResponse(wallets, 'success');
   }
 
+  @Get(':id')
+  async get(
+    @Param(':id') id: string | number,
+  ): Promise<SuccessResponse<Wallet[]>> {
+    const wallets = await this.walletService.findAll();
+    return new SuccessResponse(wallets, 'success');
+  }
+
   @Post()
   @ApiOperation({ summary: 'see' })
   @UseFilters(ValidationFilter)
@@ -55,13 +64,18 @@ export class WalletController {
     return new SuccessResponse(w, 'Data berhasil ditambah');
   }
 
-  @Put()
-  async update(): Promise<SuccessResponse<Wallet>> {
+  @Put(':id')
+  async update(
+    @Param(':id') id: string | number,
+    @Body() req: WalletReq,
+  ): Promise<SuccessResponse<Wallet>> {
     return new SuccessResponse();
   }
 
-  @Delete()
-  async delete(): Promise<SuccessResponse<string>> {
+  @Delete(':id')
+  async delete(
+    @Param(':id') id: string | number,
+  ): Promise<SuccessResponse<string>> {
     return new SuccessResponse();
   }
 }

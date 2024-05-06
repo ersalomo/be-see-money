@@ -12,7 +12,7 @@ async function bootstrap() {
     // .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('/api/docs-sweagger', app, document);
   // app.use(cookieParser('my-cooki'));
   await app.listen(3000);
 }
