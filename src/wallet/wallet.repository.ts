@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { Wallet } from '@prisma/client';
 import { WalletReq } from 'src/models/models';
 

@@ -26,7 +26,7 @@ model User {
 }
 
 model Wallet {
-  id            String          @id @default(uuid())
+  id            Int             @id @default(autoincrement())
   userId        String
   walletName    String
   currency      String          @default("IDR")
@@ -41,16 +41,16 @@ model Wallet {
 }
 
 model WalletHistory {
-  id              String          @id @default(uuid())
+  id              Int             @id @default(autoincrement())
   desc            String?
   categoryId      Int?
   amount          Float
-  walletId        String
+  paymentMethod   String?
+  walletId        Int
   image           String?
   transactionType TransactionType
   createAt        DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  paymentMethod   Int?
   wallet          Wallet          @relation(fields: [walletId], references: [id])
 }
 
