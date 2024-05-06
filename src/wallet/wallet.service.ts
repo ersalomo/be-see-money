@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { WalletReq } from 'src/models/models';
+import { UpdateWalletReq, WalletReq } from 'src/models/models';
 import { TransactionType, Wallet } from '@prisma/client';
 import { WalletRepostory } from './wallet.repository';
 import { WalletHistoryService } from '@/wallet-history/wallet-history.service';
@@ -12,12 +12,20 @@ export class WalletService implements WalletRepostory {
     private prismaService: PrismaService,
     private walletHistoryService: WalletHistoryService,
   ) {}
-  async find(id: number): Promise<Wallet> {
+  async find(id: string, owner: string): Promise<Wallet> {
+    console.log('find service', id, owner);
     const w = await this.prismaService.wallet.findFirst({
       where: { id },
     });
+    console.log(w);
     if (w === null) {
       throw new HttpException('Wallet not found', 404);
+    }
+    if (w.isDeleted) {
+      throw new HttpException('Wallet not found', 404);
+    }
+    if (w.userId !== owner) {
+      throw new HttpException('Unauthorized', 403);
     }
     return w;
   }
@@ -26,22 +34,41 @@ export class WalletService implements WalletRepostory {
     return this.prismaService.wallet.findMany();
   }
 
-  async delete(id: number): Promise<Wallet> {
-    await this.find(id);
-    return this.prismaService.wallet.delete({
+  async delete(id: string, owner: string): Promise<Wallet> {
+    await this.find(id, owner);
+    return await this.prismaService.wallet.update({
       where: { id },
+      data: {
+        isDeleted: true,
+      },
     });
   }
-  async update(walletReq: WalletReq): Promise<Wallet> {
+  async update(walletId: string, walletReq: WalletReq): Promise<Wallet> {
     return await this.prismaService.wallet.update({
-      where: { id: 0 },
+      where: { id: walletId },
       data: walletReq,
     });
   }
 
+  async updateBalance(req: UpdateWalletReq): Promise<Wallet> {
+    await this.find(req.walletId, req.owner);
+    let wallet: Wallet;
+    if (req.type == TransactionType.INCOME) {
+      wallet = await this.addBalance(req.walletId, req.balance, req.owner);
+    } else if (req.type == TransactionType.EXPENSE) {
+      wallet = await this.addExpense(req.walletId, req.balance, req.owner);
+    } else {
+      throw new HttpException('type is not suitable', 400);
+    }
+    return wallet;
+  }
   // cek user id
-  async addBalance(id: number, balance: number): Promise<Wallet> {
-    const { totalIncome, balance: currBalance } = await this.find(id);
+  private async addBalance(
+    id: string,
+    balance: number,
+    owner: string,
+  ): Promise<Wallet> {
+    const { totalIncome, balance: currBalance } = await this.find(id, owner);
     const w = await this.prismaService.wallet.update({
       where: { id },
       data: {
@@ -62,13 +89,25 @@ export class WalletService implements WalletRepostory {
     return w;
   }
 
-  async addExpense(id: number, balance: number): Promise<Wallet> {
-    const { totalOutcome, balance: currBalance } = await this.find(id);
+  private async addExpense(
+    id: string,
+    balance: number,
+    owner: string,
+  ): Promise<Wallet> {
+    const { totalOutcome, balance: currBalance } = await this.find(id, owner);
+    if (balance <= 0) {
+      throw new HttpException(`amount must greater than 0`, 400);
+    }
+    // lain waktu buat saldo minimal 10000
+    if (currBalance - balance < 0) {
+      throw new HttpException(`You have ${currBalance} left`, 400);
+    }
+
     const w = await this.prismaService.wallet.update({
       where: { id },
       data: {
         balance: currBalance - balance,
-        totalIncome: totalOutcome + balance,
+        totalOutcome: totalOutcome + balance,
         // userId: '42ca5178-ac9c-45d8-a56f-75bd4b2fa570',
       },
     });
@@ -84,11 +123,11 @@ export class WalletService implements WalletRepostory {
     return w;
   }
 
-  async save(w: WalletReq): Promise<Wallet> {
+  async save(userId: string, w: WalletReq): Promise<Wallet> {
     return await this.prismaService.wallet.create({
       data: {
         ...w,
-        userId: '42ca5178-ac9c-45d8-a56f-75bd4b2fa570',
+        userId,
       } as Wallet,
     });
   }

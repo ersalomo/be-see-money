@@ -7,8 +7,9 @@ import {
 export const Auth = createParamDecorator(
   (data: unknown, context: ExecutionContext) => {
     const req = context.switchToHttp().getRequest();
-    const { user } = req;
-    if (user) return user;
-    throw new HttpException('Unauthorized', 401);
+    const { userId } = req;
+    console.log('Auth', req.userId);
+    if (userId) return userId;
+    throw new HttpException('Unauthorized', 403);
   },
 );

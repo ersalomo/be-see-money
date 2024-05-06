@@ -15,11 +15,13 @@ model User {
   username       String          @unique
   picture        String?
   bio            String?
-  type           Int
+  type           Int             @default(0)
   blocked        Boolean         @default(false)
   directPublish  Int
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  token          String
+  isDeleted      Boolean         @default(false)
   categories     Category[]
   paymentMethods PaymentMethod[]
   wallets        Wallet[]
@@ -36,6 +38,7 @@ model Wallet {
   totalOutcome  Float           @default(0)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  isDeleted     Boolean
   user          User            @relation(fields: [userId], references: [id])
   walletHistory WalletHistory[]
 }

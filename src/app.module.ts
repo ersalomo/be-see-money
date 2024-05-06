@@ -11,6 +11,12 @@ import { ExpenseModule } from './expense/expense.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AnalyticModule } from './analytic/analytic.module';
+import { CommonModule } from './common/common.module';
+import { StorageModule } from './storage/storage.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+// import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -24,6 +30,14 @@ import { AnalyticModule } from './analytic/analytic.module';
     UserModule,
     AuthModule,
     AnalyticModule,
+    CommonModule,
+    StorageModule.forRoot(),
+    MulterModule.register({
+      dest: '/public/files',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/public/files'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

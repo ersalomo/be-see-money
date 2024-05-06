@@ -13,4 +13,20 @@ export class WalletReq {
 export class UpdateWalletReq {
   balance: number;
   type: TransactionType;
+  walletId?: string;
+  owner?: string;
+}
+
+export class LoginReq {
+  username: string;
+  password: string;
+}
+
+export class LoginRes {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export class CreateCategoryReq {
+  name: string;
 }

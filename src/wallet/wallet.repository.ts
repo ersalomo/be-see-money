@@ -2,8 +2,8 @@ import { Wallet } from '@prisma/client';
 import { WalletReq } from 'src/models/models';
 
 export interface WalletRepostory {
-  find(id: number): Promise<Wallet | null>;
+  find(id: string, owner: string): Promise<Wallet | null>;
   findAll(): Promise<Wallet[]>;
-  delete(id: number): Promise<Wallet | null>;
-  update(walletReq: WalletReq): Promise<Wallet | null>;
+  delete(id: string, owner: string): Promise<Wallet | null>;
+  update(walletId: string, walletReq: WalletReq): Promise<Wallet | null>;
 }
