@@ -17,7 +17,7 @@ export class StorageModule {
         // StorageService
         {
           provide: StorageService,
-          useValue: new StorageService('public'),
+          useValue: new StorageService('public/images'),
         },
       ],
       exports: [StorageService],

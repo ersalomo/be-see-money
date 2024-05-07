@@ -30,6 +30,7 @@ export class PaymentMethodService {
   ): Promise<PaymentMethod> {
     await this.verifyPaymentName(userId, req.methodName);
     // await this._storageServ.writeFile(req.file, req.image);
+    this._storageServ.writeFileUpload(req.file);
     return await this._prismaServ.paymentMethod.create({
       data: {
         image: req.image,

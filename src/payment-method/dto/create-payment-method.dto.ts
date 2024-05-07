@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 export class CreatePaymentMethodDto {
   methodName: string;
   image?: string;
-  file?: any;
+  file?: Express.Multer.File;
   meta?: any;
   desc?: string;
 }

@@ -13,6 +13,7 @@ export class AuthMiddleware implements NestMiddleware {
       });
       if (user) {
         req.userId = user.id;
+        req.userRole = user.type;
       }
     }
     next();

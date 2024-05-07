@@ -26,6 +26,24 @@ export class StorageService {
     });
   }
 
+  writeFileUpload(file: Express.Multer.File) {
+    // const rootPath = process.cwd(); // Mendapatkan root directory proyek saat ini
+
+    // const folderPath = path.join(rootPath, 'public');
+    // const folderPath = path.join(__dirname, '..', 'public');
+    const folderPath = `${this._folder}/${+new Date()}${file.originalname}`;
+    fs.writeFile(
+      // path.join(folderPath, image.originalname),
+      folderPath,
+      file.buffer,
+      'binary',
+      (err) => {
+        console.log(err);
+        if (!err) console.log(`${folderPath} created successfully!`);
+      },
+    );
+  }
+
   async deleteFile(filename: string) {
     const oldData = `${this._folder}/${filename}`;
     fs.unlink(oldData, (err) => {

@@ -32,11 +32,12 @@ import { join } from 'path';
     AnalyticModule,
     CommonModule,
     StorageModule.forRoot(),
-    MulterModule.register({
-      dest: '/public/files',
-    }),
+    // MulterModule.register({
+    //   dest: '/public/files',
+    // }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '/public/files'),
+      rootPath: join(__dirname, '..', 'public'),
+      renderPath: 'public',
     }),
   ],
   controllers: [AppController],

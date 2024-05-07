@@ -11,6 +11,7 @@ import {
   ParseFilePipeBuilder,
   HttpStatus,
   Injectable,
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentMethodService } from './payment-method.service';
 import { CreatePaymentMethodDto } from './dto/create-payment-method.dto';
@@ -24,6 +25,10 @@ import { FileValidator } from '@nestjs/common';
 import * as fileType from 'file-type-mime';
 import { StorageService } from '@/storage/storage.service';
 import * as fs from 'fs';
+import * as Mul from 'multer';
+import * as path from 'path';
+import { LinkImageInterceptor } from '@/link-image/link-image.interceptor';
+import { AdminGuard } from '@/admin/admin.guard';
 
 export interface CustomUploadTypeValidatorOptions {
   fileType: string[];
@@ -61,6 +66,8 @@ export class PaymentMethodController {
   constructor(private readonly _paymentMethodService: PaymentMethodService) {}
 
   @Get()
+  @UseInterceptors(LinkImageInterceptor)
+  @UseGuards(new AdminGuard([0, 1]))
   async findAll(
     @Auth() userId: string,
   ): Promise<SuccessResponse<PaymentMethod[]>> {
@@ -78,7 +85,8 @@ export class PaymentMethodController {
         methodName: { type: 'string' },
         image: {
           type: 'string',
-          format: 'binary',
+          nullable: true,
+          // format: 'binary',
         },
       },
     },
@@ -98,6 +106,7 @@ export class PaymentMethodController {
     )
     image: Express.Multer.File,
   ) {
+    console.log('Image', image);
     req.image = image.originalname;
     req.file = image;
     return await this._paymentMethodService.create(userId, req);
