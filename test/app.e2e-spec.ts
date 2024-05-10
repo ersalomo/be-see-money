@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('users controller', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -14,11 +14,12 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
   });
-
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  describe('api/users/auth', async () => {
+    it('/ (GET)', () => {
+      return request(app.getHttpServer())
+        .get('/')
+        .expect(200)
+        .expect('Hello World!');
+    });
   });
 });

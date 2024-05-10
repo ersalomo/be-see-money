@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Put } from '@nestjs/common';
 import { WalletHistoryService } from './wallet-history.service';
 import { ApiTags } from '@nestjs/swagger';
-import SuccessResponse from 'src/responses/SuccessResponse';
+import SuccessResponse from '@/responses/SuccessResponse';
 import { WalletHistory } from '@prisma/client';
 
 @ApiTags('Wallet History')

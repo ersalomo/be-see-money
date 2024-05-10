@@ -1,10 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateWalletReq, WalletReq } from 'src/models/models';
 import { TransactionType, Wallet } from '@prisma/client';
 import { WalletRepostory } from './wallet.repository';
 import { WalletHistoryService } from '@/wallet-history/wallet-history.service';
 import { WalletHistory } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class WalletService implements WalletRepostory {
@@ -17,7 +17,6 @@ export class WalletService implements WalletRepostory {
     const w = await this.prismaService.wallet.findFirst({
       where: { id },
     });
-    console.log(w);
     if (w === null) {
       throw new HttpException('Wallet not found', 404);
     }
@@ -36,7 +35,7 @@ export class WalletService implements WalletRepostory {
 
   async delete(id: string, owner: string): Promise<Wallet> {
     await this.find(id, owner);
-    return await this.prismaService.wallet.update({
+    return this.prismaService.wallet.update({
       where: { id },
       data: {
         isDeleted: true,
@@ -44,7 +43,7 @@ export class WalletService implements WalletRepostory {
     });
   }
   async update(walletId: string, walletReq: WalletReq): Promise<Wallet> {
-    return await this.prismaService.wallet.update({
+    return this.prismaService.wallet.update({
       where: { id: walletId },
       data: walletReq,
     });
@@ -124,7 +123,7 @@ export class WalletService implements WalletRepostory {
   }
 
   async save(userId: string, w: WalletReq): Promise<Wallet> {
-    return await this.prismaService.wallet.create({
+    return this.prismaService.wallet.create({
       data: {
         ...w,
         userId,

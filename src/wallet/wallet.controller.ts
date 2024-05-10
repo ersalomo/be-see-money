@@ -8,16 +8,17 @@ import {
   Delete,
   Patch,
   Param,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WalletService } from './wallet.service';
-import SuccessResponse from 'src/responses/SuccessResponse';
+import SuccessResponse from '@/responses/SuccessResponse';
 import { Wallet } from '@prisma/client';
-import { UpdateWalletReq, WalletReq } from 'src/models/models';
-import { ValidationService } from 'src/validation/validation.service';
+import { UpdateWalletReq, WalletReq } from '@/models/models';
+import { ValidationService } from '@/validation/validation.service';
 import { z } from 'zod';
-import { ValidationFilter } from 'src/validation/validation.filter';
-import { Auth } from '@/common/auth.decorator';
+import { ValidationFilter } from '@/validation/validation.filter';
+import { Auth } from '../common/auth.decorator';
 
 @ApiTags('Wallet')
 @ApiBearerAuth()
@@ -55,7 +56,9 @@ export class WalletController {
 
   @Post()
   @ApiOperation({ summary: 'see' })
+  @ApiBearerAuth()
   @UseFilters(ValidationFilter)
+  @HttpCode(201)
   async create(
     @Auth() userId: string,
     @Body() walletReq: WalletReq,
